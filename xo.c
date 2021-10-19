@@ -27,14 +27,13 @@ void write_gamefield()
 	printf("\n+---+\n|%3.3s|\n|%3.3s|\n|%3.3s|\n+---+\n\n", field[0], field[1], field[2]);
 }
 
-// 1 - ok, 0 - not ok
+// 0 - ok, 1 - not ok
 int is_coord_correct(int x, int y)
 {
-	return !((x <= 0) || (x > 3) || (y <= 0) || (y > 3) ||
-			(field[y-1][x-1] == 'O') || (field[y-1][x-1] == 'X'));
+	return (x <= 0) || (x > 3) || (y <= 0) || (y > 3) ||
+			(field[y-1][x-1] == 'O') || (field[y-1][x-1] == 'X');
 }
 
-// 0 - noone, 1 - X, -1 - O
 char who_won()
 {
 	int i, j, tx, to, po = 0, px = 0;
@@ -53,9 +52,10 @@ char who_won()
 
 exit_check:
 	int draw = 0;
-	for(int i = 0; i < 3; i++) {
-		for(int j = 0; j < 3; j++) {
+	for(int i = 0; i < 3; i++)
+		for(int j = 0; j < 3; j++)
 			draw += (field[i][j] != ' ');
+<<<<<<< HEAD
 		}
 	}
 
@@ -64,6 +64,14 @@ exit_check:
 	else if (po)
 		return 'O';
 	else 
+=======
+	
+	if(pX) 
+		return 'X';
+	else if (pO)
+		return 'O';
+	else
+>>>>>>> db41fd61df9bf59f896af95c979870cc1efdf124
 		return draw;
 }
 
@@ -105,7 +113,7 @@ void p_turn(int cond, char p1_char, char p2_char)
 				y = atoi(&answ[2]);
 				printf("%d, %d\n", x, y);
 			}
-		} while(!is_coord_correct(x, y));
+		} while(is_coord_correct(x, y));
 	}
 
 	else {
@@ -114,7 +122,7 @@ void p_turn(int cond, char p1_char, char p2_char)
 		do {
 			x = (rand() % 3) + 1;
 			y = (rand() % 3) + 1;
-		} while(!is_coord_correct(x, y));
+		} while(is_coord_correct(x, y));
 	}
 
 	field[y-1][x-1] = p_char;
