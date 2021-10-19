@@ -55,7 +55,6 @@ exit_check:
 	for(int i = 0; i < 3; i++)
 		for(int j = 0; j < 3; j++)
 			draw += (field[i][j] != ' ');
-<<<<<<< HEAD
 		}
 	}
 
@@ -64,14 +63,6 @@ exit_check:
 	else if (po)
 		return 'O';
 	else 
-=======
-	
-	if(pX) 
-		return 'X';
-	else if (pO)
-		return 'O';
-	else
->>>>>>> db41fd61df9bf59f896af95c979870cc1efdf124
 		return draw;
 }
 
