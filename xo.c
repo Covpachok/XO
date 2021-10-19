@@ -2,6 +2,20 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define WW_SUBCHECK(X, Y) \
+		for(tx = 0, to = 0, j = 0; j < 3; j++) {\
+			tx += (field[(X)][(Y)] == 'X'); 	\
+			to += (field[(X)][(Y)] == 'O'); 	\
+		} 						\
+		if(tx == 3) { 			\
+			px = 1; 			\
+			goto exit_check; 	\
+		} 						\
+		if(to == 3) { 			\
+			po = 1; 			\
+			goto exit_check; 	\
+		}
+
 char field[3][3] = {
 	{ ' ', ' ', ' ' },
 	{ ' ', ' ', ' ' },
@@ -23,25 +37,21 @@ int is_coord_correct(int x, int y)
 // 0 - noone, 1 - X, -1 - O
 char who_won()
 {
-	int pX =
-			((field[0][0] == 'X') && (field[0][1] == 'X') && (field[0][2] == 'X')) ||
-			((field[1][0] == 'X') && (field[1][1] == 'X') && (field[1][2] == 'X')) ||
-			((field[2][0] == 'X') && (field[2][1] == 'X') && (field[2][2] == 'X')) ||
-			((field[0][0] == 'X') && (field[1][0] == 'X') && (field[2][0] == 'X')) ||
-			((field[0][1] == 'X') && (field[1][1] == 'X') && (field[2][1] == 'X')) ||
-			((field[0][2] == 'X') && (field[1][2] == 'X') && (field[2][2] == 'X')) ||
-			((field[0][0] == 'X') && (field[1][1] == 'X') && (field[2][2] == 'X')) ||
-			((field[0][2] == 'X') && (field[1][1] == 'X') && (field[2][0] == 'X'));
-	int pO =
-			((field[0][0] == 'O') && (field[0][1] == 'O') && (field[0][2] == 'O')) ||
-			((field[1][0] == 'O') && (field[1][1] == 'O') && (field[1][2] == 'O')) ||
-			((field[2][0] == 'O') && (field[2][1] == 'O') && (field[2][2] == 'O')) ||
-			((field[0][0] == 'O') && (field[1][0] == 'O') && (field[2][0] == 'O')) ||
-			((field[0][1] == 'O') && (field[1][1] == 'O') && (field[2][1] == 'O')) ||
-			((field[0][2] == 'O') && (field[1][2] == 'O') && (field[2][2] == 'O')) ||
-			((field[0][0] == 'O') && (field[1][1] == 'O') && (field[2][2] == 'O')) ||
-			((field[0][2] == 'O') && (field[1][1] == 'O') && (field[2][0] == 'O'));
+	int i, j, tx, to, po = 0, px = 0;
+	for(i = 0; i < 3; i++) {
+		/* - */
+		WW_SUBCHECK(i, j);
 
+		/* | */
+		WW_SUBCHECK(j, i);
+	}
+	/* \ */
+	WW_SUBCHECK(j, j);
+
+	/* / */
+	WW_SUBCHECK(j, 2-j);
+
+exit_check:
 	int draw = 0;
 	for(int i = 0; i < 3; i++) {
 		for(int j = 0; j < 3; j++) {
@@ -49,13 +59,12 @@ char who_won()
 		}
 	}
 
-	if(pX) {
+	if(px)
 		return 'X';
-	} 
-	else if (pO) {
+	else if (po)
 		return 'O';
-	}
-	return draw;
+	else 
+		return draw;
 }
 
 void p_turn(int cond, char p1_char, char p2_char)
@@ -112,6 +121,14 @@ void p_turn(int cond, char p1_char, char p2_char)
 	write_gamefield();
 }
 
+void game_over(int p1w, int p2w)
+{
+	printf("Game is over.\n");
+	printf("[Player1 wins: %03d times]\n", p1w);
+	printf("[Player2 wins: %03d times]\n", p2w);
+	exit(0);
+}
+
 int main()
 {
 	time_t t;
@@ -162,18 +179,13 @@ int main()
 		}
 
 		if(round_count == 999) {
-			printf("Game is over. [999] round reached.\n");
-			printf("[Player1 wins: %03d times]\n", p1_wins_count);
-			printf("[Player2 wins: %03d times]\n", p2_wins_count);
-			return 0;
+			game_over(p1_wins_count, p2_wins_count);
 		}
 
 		printf("Do you want to continue? (Y/N)\n");
 		scanf("\n%c", &pansw);
 		if((pansw == 'N') || (pansw == 'n')) {
-			printf("[Player1 wins: %03d times]\n", p1_wins_count);
-			printf("[Player2 wins: %03d times]\n", p2_wins_count);
-			return 0;
+			game_over(p1_wins_count, p2_wins_count);
 		}
 
 		// clear field
